@@ -28,7 +28,7 @@
 ### 3.node.js可以做什么
 - 基于[Express](http://www.expressjs.com.cn/)框架，可以快速构建Web应用
 - 基于[Electron](http://electronjs.org/)框架，可以构建跨平台的桌面应用
-- 基于[restify](http://restify.com./)框架，可以快速构建API接口项目
+- 基于[restify](http://restify.com/)框架，可以快速构建API接口项目
 - 读写和操作数据库、创建使用过的命令行工具辅助前端开发、etc..
 ### 4.Node.js怎么学
 - JavaScript基础语法+node.js内置API模块(fs,http,path等)+第三方API模块(express,mysql等)
