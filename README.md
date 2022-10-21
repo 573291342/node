@@ -106,3 +106,109 @@ fs.writeFile(file,data[,options],callback)
 - 语法格式：`path.extname(path)`
 - path /<string> 必选参数，表示一个路径的字符串
 - 返回：/<string> 返回得到的扩展名字符串
+# 4.http模块
+## 4.1 什么是http模块
+### 1.服务器和客户端
+- 消费资源的电脑叫客户端
+- 提供网络资源的电脑叫服务器
+- http模块是Node.js官方提供的、用来创建web服务器的模块。通过http模块提供的http.createServer()方法能把一台普通的电脑，变成一台web服务器
+- 语法：`const http = require('http')`
+## 4.2 服务器相关概念
+### 1. IP地址
+- IP地址相当于互联网上每台计算机的唯一地址
+- 点分十进制(192.168.1.1)
+- 注意
+  * 互联网上每台web服务器，都有自己的IP地址
+  * 自己的电脑也是一台服务器(127.0.0.1)
+### 2. 域名和域名服务器
+- 域名(IP的别名)
+- 域名服务器(DNS)用于存放IP和域名
+- 127.0.0.1对应localhost
+### 3. 端口号
+- 每一个端口号对应一个web服务
+- 每个端口号不能被多个web服务所占用
+- 80端口可以省略
+## 4.4 创建基本的web服务器
+### 1. 创建web服务器的基本步骤
+- 导入http模块
+  `const http = require('http')`
+- 创建web服务器实例
+  `const server = http.createServer()`
+- 为服务器实例绑定request事件，监听客户端请求
+  ```
+  server.on('request', (req, res) => {
+    console.log('someone visit our web server')
+  })
+    ```
+- 启动服务器
+  ```
+  server.listen(80, () => {
+    console.log('http server runnng at http://127.0.0.1')
+  })
+  ```
+### 2.req请求对象
+- 只要服务器接收到了客户端的请求，就会都用通过server.on()为服务器绑定的request事件处理函数，如果想在事件处理函数中，访问与客户端相关的数据和属性，可以使用如下方式：
+  ```
+  server.on('request', (req) => {
+    //req.url 是客户端请求的URL地址
+    const url = req.url
+    //req.method 是客户端请求的method类型
+    const method = req.method
+    const str = `Your request url is ${req.url},and request method is $ {req.method}`
+    console.log(str)
+  })
+  ```
+### 3.res响应对象
+- 在服务器的request事件处理函数中，如果想要访问与服务器相关的属性和数据，可以使用如下方式
+  ```
+  server.on('request', (req,res) => {
+    //req.url 是客户端请求的URL地址
+    const url = req.url
+    //req.method 是客户端请求的method类型
+    const method = req.method
+    const str = `Your request url is ${req.url},and request method is ${req.method}`
+    // 调用res.end()方法，向客户端响应一些内容
+    res.end(str)
+  })
+  ```
+### 4.解决中文乱码问题
+ `res.setHeader('content-Type','text/html;charset=utf-8')`
+## 4.5 根据不同的url响应不同的html内容
+### 1. 核心实现步骤
+- 获取 **请求的url地址**
+- 设置 **默认的响应内容** 为404 Not found
+- 判断用户请求的是否为 **/** 或 **/index.html** 首页
+- 判断用户请求的是否为 **/about.html** 关于页面
+- 设置 **Content-Type响应头**，防止中文乱码
+- 使用 **res.end()** 把内容响应给客户端
+# 模块化
+## 1.1 什么是模块化
+### 1. 模块化是指解决一个复杂问题时，自顶向下逐层把系统胡分成若干模块的过程。对于整个系统来说，模块是可组合、分解和跟换的单元。
+### 2.编程领域中的模块化，就是遵守固定的规则，把一个大文件拆成独并相互依赖的多个小模块，优点
+- 提高了代码的复用性 
+- 提高了代码的可维护性
+- 可以实现按需加载
+## 1.2 模块化规范
+### 1. 当大家都遵循童颜的模块化规范，降低了沟通的成本，极大的方便了各个模块的相互调用利人利己
+- 使用什么样的语法格式类引入模块
+- 在模块中使用什么样的语法向外暴露成员
+## 2.1 Node.js中模块的分类
+### 根据模块来源不同可以将模块分为三大类
+- 内置模块(内置模块是由Node.js官方提供的，例如fs,path,http等)
+- 自定义模块(用户自己创建的.js模块，都是自定义模块)
+- 第三方模块(有第三方开发的模块，使用时需要下载)
+## 加载模块
+### 使用强大的require()方法，可以加载内置模块，用户自定义模块，第三方模块进行使用
+- 内置模块 `require('http')`
+- 用户自定义模块 `require('./custom.js')`
+- 第三方模块 `require('moment')`
+- **使用require()方法加载其他模块时，会执行加载模块的代码**
+## 2.2 Node.js中的模块作用域
+### 1.什么是模块作用域
+- 和函数作用域类似，在自定义模块中定义的变量、方法等成员，只能在当前模块内被访问，这种模块级别的访问限制，叫做模块作用域。
+### 2.模块作用域优点
+- 防止了全局变量污染的问题
+## 2.3 向外共享模块作用域中的成员
+### 1. module对象
+- 在每个 .js 自定义模块中都有一个module对象，它里面存储了模块相关的信息
+### 2. module.exports对象
