@@ -214,4 +214,6 @@ fs.writeFile(file,data[,options],callback)
 ### 2. module.exports对象
 - 在自定义模块中，可以使用module.exports对象，将模块内的成员共享出去，供外界使用
 - 外界用require() 方法导入自定义模块时，得到的就是module.exports所指向的对象
+### 3.共享成员时的注意点
+- 使用require()方法导入模块时，导入的结果，永远以 module.exprots指向的对象为准
 
