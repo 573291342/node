@@ -64,7 +64,7 @@ fs.readFile('./file/1.txt', 'utf8', function (err, dataStr) {
     console.log(dataStr);
 })
 ```
-### 3.判断文件是否读取成功
+# 3.判断文件是否读取成功
 - 可以判读err对象是否为null，从而知晓文件的读取结果
 ## 2.3向指定的文件中写入内容
 ### 1.fs.writeFile()的语法格式
