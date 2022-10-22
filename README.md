@@ -214,4 +214,45 @@ fs.writeFile(file,data[,options],callback)
 ### 2. module.exports对象
 - 在自定义模块中，可以使用module.exports对象，将模块内的成员共享出去，供外界使用
 - 外界用require() 方法导入自定义模块时，得到的就是module.exports所指向的对象
-
+### 3.export对象
+- 由于module.export单词写起来比较复杂，为了简化对外共享成员的代码，Node提供了 **export** 对象。默认情况下，module.export和export指向同一个对象。最终共享的结果，还是以module.export指向的对象为准。
+### 4.export和module.exports的使用误区
+- 时刻谨记，require()模块时，得到的永远时module.exports指向的对象。
+## 2.4 Node.js中的模块化
+### 1. Node.js 遵循了CommonJS模块化规范，CommonJS规定了模块的特征和各模块之间如何相互依赖。
+- commonJS规范
+  - 每个模块内部，module变量代表当前模块
+  - module变量是一个对象，他的export属性（即nodule.exports）是对外的接口。
+  - 加载某个模块，其实是加载该模块的module.export属性，require()方法用于加载模块。
+## 3.1 包
+### 1. 什么是包
+- Node.js 中的**第三方模块**又叫**包**
+### 2. 包的来源
+- 包是由第三方个人或者团队开发出来的
+- **包都是免费和开源的**
+### 3. 为什么需要包
+- 包都是内置模块封装出来的，提供了更高级，更方便的API，极大的提高了开发的效率
+### 4. 从哪里下载包
+- [全球最大的包共享平台](https://www.npmjs.com/)
+- 下载包地址 https://registry.npmjs.org/
+### 5. 如何下载包
+- node package manager 包管理工具
+- `npm -v`查看自己npm的版本号
+## 2.3 npm初体验
+### 1. 格式化时间
+- 使用npm包管理工具，在项目中安装格式化时间的包moment
+- 使用require()导入格式化时间的包
+- 参考moment的官方api文档对时间进行格式化
+### 2. 在项目中安装包
+- `npm install 包的完整名称` 或 `npm i 包的完整名称`
+- 可以在包名称后面加入 **@** 符号指定包的版本号
+### 3. 初次安装包后多了哪些文件
+- 在项目文件夹下面多出了 **node_modules** 和 **package-lock.json** 的配置文件
+- node_modules 文件夹用来存放所有已经安装到项目中的包，require()导入第三方包的时候，就是从这个目录中查找并加载包
+- package-lock.json 配置文件用来记录node_modules目录下的每一个包的下载信息，例如包的名字、版本号、下载地址等
+## 3.3 包管理配置文件
+- 项目名称、版本号、描述等
+- 项目中都用到哪些包
+- 哪些包只在开发期间会用到
+- 哪些包在开发和部署时都需要用到
+### 1. 多人协作的问题
