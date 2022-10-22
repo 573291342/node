@@ -368,3 +368,91 @@ fs.writeFile(file,data[,options],callback)
   ```
 ### 7. 获取URL中动态的参数
 - 通过req.params对象，可以访问到URL中，通过：匹配的的动态参数
+## 1.3 托管静态资源
+### 1. express.static()
+- 共享public目录下的资源`app.use(express.static('public))`
+- 注意Express在指定的静态目录中查找文件，并对外提供静态资源的访问路径，因此，存放静态文件的目录名不会出现在URL中。
+### 2. 托管多个静态资源
+- 多次调用express.static()
+  ```
+  app.use(express.static('public'))
+  app.use(express.static('files'))
+  ```
+- 访问静态资源文件时，express.static() 函数会根据目录的添加顺序查找所需的文件
+### 3. 挂载路径前缀
+- 如果希望在托管的静态资源访问路径之前，挂载路径前缀，则可以使用：`app.use('/public',express.static('public'))`
+## 1.4 nodemon
+### 1. 为什么要使用nodemon
+- 在编写调式Node.js项目的时候，能监听修改的代码
+- `npm i -g nodemon`
+- 由 `node 名称.js` 变为 `nodemon 名称.js`
+## 2.1 路由的概念
+### 1. 现实生活中的路由
+- 按键与服务之间的映射关系
+### 2. Express中的路由
+- 在express中，路由指的是客户端与服务器处理函数之间的映射关系
+- Express中的路由分3部分组成，分别是请求类型，请求的URL地址，处理函数
+- 格式：`app.METHOD(PATH,HANDLER)`
+### 3.Express中的路由例子
+```
+app.get('/', (req, res) => {
+  res.send('请求成功')
+})
+
+app.post('/', (req, res) => {
+  res.send('请求成功')
+})
+```
+### 4. 路由的匹配过程
+- 每当一个请求到达服务器之后，需要先经过路由的匹配，只有匹配成功，才会调用对应的处理函数，如果URL和请求方式同时匹配才会交给对应的处理函数。
+## 2.2 路由的使用
+### 1. 路由最简单的用法
+- 把路由挂载到app上
+```
+ //挂载路由
+app.get('/', (req, res) => {
+  res.send('Hello world')
+})
+app.post('/', (req, res) => {
+  res.send('Hello world')
+})
+```
+### 2. 模块化路由
+- 为了方便对路由进行模块化的管理，Express不建议将路由直接挂载到app上，而是推荐将路由抽离为单独的模块。
+- 步骤
+ 1. 创建路由模块对应的.js文件
+ 2. 调用express.Router()函数创建路由对象
+ 3. 向路由对象上挂载具体额路由
+ 4. 使用modele.export向外共享路由对象
+ 5. 使用app.use()函数注册路由模块
+ ### 3. 为路由模块添加前缀
+ - 类似与托管静态资源
+ ## 3.1 中间件的概念
+ ### 1. 什么是中间件
+ - 中间件特指业务流程的中间处理环节
+ ### 2. express中间件的调用流程
+ - 当一个请求到达Express服务器之后，可以连续调用多个中间件，从而对这次请求进行预处理
+ ### 3. express中间件的格式
+ - express的中间件，本质上就是一个function处理函数，express中间件的格式：
+  ```
+  app.get('',(req,res,next)=>{
+    next()
+  })
+  ```
+ - 路由形参列表必须含有next参数，而路由处理函数只包含req和res
+ ### 4. next函数的作用 
+ - next函数就是实现多个中间件连续强调的关键，他表示把流转关系转交给下一个中间件或路由
+ ## 3.2 定义中间件函数
+ ### 1. 可以通过
+  ```
+  //定义一个最简单的中间件函数
+  const mw = function (req, res, next) {
+    console.log('这是最简单的中间件函数');
+    //把流转关系，转交给下一个中间件或者路由
+    next()
+  } 
+
+  ```
+  ### 2. 全局生效的中间件
+  - 客户端发起的任何请求，到达服务器之后，就会触发的中间件，叫做全局有效的中间件
+  - 通过app.use(中间件函数)，即可定义一个全局生效
