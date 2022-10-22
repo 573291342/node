@@ -256,3 +256,115 @@ fs.writeFile(file,data[,options],callback)
 - 哪些包只在开发期间会用到
 - 哪些包在开发和部署时都需要用到
 ### 1. 多人协作的问题
+### 2. 如何记录项目中安装了哪些包
+- 在项目目录中，创建一个叫做package.json的配置文件，即可用来记录项目中安装了哪些包，从而方便剔除node_modules目录后，在团队之间共享项目的源代码。
+### 3. 快速创建package.json
+- `npm init -y`
+- 上面的命令只能在英文的目录下运行成功，不能有中文和空格。
+- 运行npm install 命令安装包的时候,npm包管理工具会自动把包的名称和版本号记录到package.json中。
+### 4. dependencices节点
+- 用来记录您使用npm install 命令安装了哪些包。
+- 安装多个包之间用空格隔开 
+### 5. 一次性安装所有的包
+- 没有安装包会报 **cannot find modules 包名称**
+- 可以运行 `npm install` 一次性安装所有的依赖包
+### 6. 卸载包
+- 可以运行 `npm uninstall` 卸载指定包(注意uninstall不能简写)，命令执行成功后，会把卸载的包，自动从package.json中的dependencies中移除
+### 7. devDependencies节点
+- 如果某些包只在项目开发阶段会用到，在项目上线之后不会用到，则建议把这些包记录到devDependencies节点中，与之对应的，如果某些包在开发和项目上线之后都需要用到，则建议把这些包记录到dependencies节点中。
+- 可以使用 `npm i 包名 -D` 或 `npm i -D 包名`相当于 `npm install 包名 --save-dev`(可以在npm官网中查看是否需要这种安装方式)
+## 3.4 解决下包速度慢的问题
+### 1. 淘宝NPM镜像服务器
+### 2. 切换npm的下包镜像源
+- 查看当前的下包镜像源`npm config get registry`
+- 切换下包镜像源`npm config set registry=地址`
+- 淘宝镜像源 https://registry.npm.taobao.org/
+### 3. nrm命令
+-  为了更方便的切换下包的镜像源，可以安装nrm这个小工具
+- `npm i nrm -g`
+- `nrm ls`查看所有可用的镜像源
+- `nrm use taobao`将下包的镜像源切换为淘宝镜像源
+## 3.5 包的分类
+### 1. 项目包
+- 被安装到项目的node_modules中的包，都是项目包
+- 开发依赖包(被记录到devDependencies节点的包，只有在开发时期会用到，安装的时候会用到 **-D** 命令)
+- 核心依赖包(被记录到dependencies节点的包，在开发时期和项目上线之后都会用到)
+### 2. 全局包
+- 安装全局包 `npm i 包名 -g`
+- 卸载全局包 `npm uninstall 包名 -g`
+- 只有工具性质的包，才有全局安装的必要性，因为他提供了终端命令
+- 可以查看官方文档决定是否全局安装
+## 4.1 模块优先从缓存中加载 
+- 模块在第一次被记载后会被缓存，require()不会导致模块的代码多次执行
+- 所有的包都会优先从缓存中加载，从而提高模块的加载效率
+## 4.2 内置模块的加载机制
+- 内置模块是由Node.js 官方提供的模块，内置模块的加载优先级最高
+## 4.3 自定义模块的加载机制
+- 加载自定义模块时，必须指定以 **./** 或者 **../** 开头的路径标识符，如果没有指定则node会把他当作内置模块或第三方模块进行加载。
+- 在使用require()导入自定义模块时候，如果省略了文件的扩展名，则node.js会按顺序分别尝试加载以下的文件：
+  1. 按照确切的文件名进行加载
+  2. 补全.js扩展名进行加载
+  3. 补全.json扩展名进行加载
+  4. 补全.node 扩展名进行加载
+  5. 加载失败，终端报错
+## 4.4 第三方模块的加载机制
+- 如果传递给require()的模块标识符不是内置模块，也没有以 ./ 或../开头，则node.js会从当前的父目录开始，尝试从/node_modules 文件中加载第三方模块。如果没有找到对应的第三方模块，则移动到上一层父目录中，进行加载，直到文件系统的根目录
+## 4.5 目录作为模块
+- 当把目录作为模块标识符，传递给require() 进行加载的时候，有三种加载方式
+  1. 在被加载的目录下查找一个叫做package.json的文件，并寻求main属性，作为require()加载的入口
+  2. 如果目录没有package.json文件，或者main 入口不存在或无法解析，则Node.js将会试图加载目录下的index.js文件
+  3. 如果上两步都失败，则报错 Error:Cannot find module 'xxx'
+# Express
+## 1.1 Express简介
+### 1.什么是Express
+- Express是基于Node.js平台，快速，开放，🤺的web开发框架。(和http模块类似)通俗理解就是专门用来创建web服务器的。
+### 2. Express能做什么
+- web网站服务器：专门对外提供Web网页资源的服务器
+- API接口服务器：专门对外提供API接口的服务器
+## 1.2 使用
+### 1.安装
+- `npm i express`
+### 2.创建基本的web服务器
+  ```
+  // 导入express
+  const express = require('express')
+  // 创建web服务器
+  const app = express()
+
+  //启动web服务器
+  app.listen(8080, () => {
+    console.log('8080端口启动！');
+  })
+  ```
+### 3. 监听GET请求
+- 通过app.get()方法，可以监听客户端的GET请求
+  ```
+  //监听get请求
+  app.get('/user', (req, res) => {
+  //调用express 提供的 res.send()向客户端响应一个JSON对象
+    res.send({ name: 'ls', age: 18, gender:'男' })
+  })
+  ```
+### 4. 监听POST请求
+- 通过app.post()方法，可以监听客户端的POST请求
+  ```
+  //监听post请求
+  app.post('/user', (req, res) => {
+  //调用express 提供的 res.send()向客户端响应一个文本字符串
+    res.send('请求成功')
+  })
+  ```
+### 5. 可以通过res.send()方法，可以把处理好的内容，发送给客户端
+  `res.send({ name: 'ls', age: 18, gender:'男' })`
+### 6. 获取URL中携带的查询参数
+- 通过req.query()对象，可以访问到客户端通过查询字符串的形式，发送到服务器的参数
+  ```
+  app.get('/', (req, res) => {
+    //通过req.query 可以获取到客户端发送过来的查询参数
+    // 默认情况req.query 是一个空对象
+    console.log(req.query);
+    res.send(req.query)
+  })
+  ```
+### 7. 获取URL中动态的参数
+- 通过req.params对象，可以访问到URL中，通过：匹配的的动态参数
