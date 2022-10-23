@@ -12,9 +12,11 @@ const mw = function (req, res, next) {
 app.use(mw)
 
 app.get('/', (req, res) => {
+  console.log('调用了/路由');
   res.send('Home page')
 })
 app.post('/user', (req, res) => {
+  console.log('调用了/user路由');
   res.send('User page')
 })
 
