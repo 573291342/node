@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="../jquery-1.7.2.js"></script>
+  <title>数据库测试</title>
+  <style>
+    li {
+      list-style: none;
+    }
+  </style>
+</head>
+<body>
+  <button>显示所有用户数据</button>
+  <button>添加一条username为李四数据</button>
+  <button>删除username为李四的数据</button>
+  <button>更新一条数据</button>
+  <ul></ul>
+  <script>
+    $(function () {
+      $('button:eq(0)').click(function () {
+        $.ajax({
+          url: 'http://127.0.0.1/api/account',
+          type: 'get',
+          success: function (data) {
+            $('li').remove()
+            data.forEach(d => {
+              let li = `<li>姓名:${d.username}-----工资:${d.balance}</li>`
+              $('ul').append(li)
+            });
+          },
+          error: function () {
+            console.log('出错了');
+          }
+        })
+      })
+      $('button:eq(1)').click(function () {
+        $.ajax({
+          url: 'http://127.0.0.1/api/addAccount',
+          type: 'get',
+          data: { username: '李四', balance: 2000 },
+          success: function (data) {
+            console.log(data);
+            $('button:eq(0)').click()
+          },
+          error: function () {
+            console.log('出错了');
+          }
+        })
+      })
+      $('button:eq(2)').click(function () {
+        $.ajax({
+          url: 'http://127.0.0.1/api/deleteAccount',
+          type: 'get',
+          data: { username: '李四' },
+          success: function (res) {
+            console.log(res);
+            $('button:eq(0)').click()
+          },
+          error: function () {
+            console.log('出错了');
+          }
+        })
+      })
+      $('button:eq(3)').click(function () {
+        $.ajax({
+          url: 'http://127.0.0.1/api/updateAccount',
+          type: 'get',
+          data: { username: '李四', balance: 9000 },
+          success: function (res) {
+            console.log(res);
+            $('button:eq(0)').click()
+          },
+          error: function () {
+            console.log('出错了');
+          }
+        })
+      })
+    })
+  </script>
+</body>
+</html>

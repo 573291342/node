@@ -492,4 +492,178 @@ app.post('/', (req, res) => {
   })
   ```
   ### 5. 定义局部生效的中间件
-  - 不使用app.use()定义的中间件，叫做局部生效的中间件，
+  - 不使用app.use()定义的中间件，叫做局部生效的中间件
+  ```
+  //局部中间件一
+  const mw1 = (req, res, next) => {
+    console.log('调用了局部生效的中间件');
+    next()
+  }
+
+  //定义路由
+  app.get('/', mw1, (req, res) => {
+    res.send('Home page.')
+  })
+  app.get('/user', (req, res) => {
+    res.send('User page.')
+  })
+  ```
+  ### 6. 定义多个局部中间件
+  - 可以在路由中，通过两种方式使用多个局部中间件
+  ```
+  app.get('/', mw1, mw2, (req, res) => {
+    res.send('Home page.')
+  })
+  app.get('/user', [mw2, mw1], (req, res) => {
+    res.send('User page.')
+  })
+  ```
+  ### 7. 使用中间件的注意事项
+  - 一定要在路由之前注册中间件
+  - 客户端发送过来的请求，可以连续调用多个中间件进行处理
+  - 执行完中间件的业务代码后，不要忘记调用next()函数
+  - 为了防止代码逻辑混乱，不要在next()函数不要再写额外代码
+  - 连续调用多个中间件时，多个中间件之间，共享req和res对象的
+  ## 3.3 中间件的分类
+  为了方便大家理解和记忆中间件的使用，Express官方把常见的中间件用法，分成了5大类
+  - 应用级别的中间件
+  - 路由级别的中间件
+  - 错误级别的中间件
+  - Express内置的中间件
+  - 第三方的中间件
+  ### 1. 应用级别的中间件
+  - 通过app.use()或app.get() 或app.post()，绑定到app实例上的中间件，叫做应用级别额中间件
+  `app.use((req, res, next) => { next() })`
+  `app.get('/', mw1, (req, res) => { res.send('Home page.') })`
+  ### 2. 路由级别的中间件
+  - 通过绑定到express.Router()实例上的中间件，叫做路由级别的中间件，他的用法和应用级别的中间件没有任何区别，只不过，应用界别的中间件是绑定到app实例上，路由级别的中间件绑定到router实例上
+  `router.use((req, res, next) => { next() })`
+  ### 3. 错误级别的中间件
+  - 错误级别的中间件的作用：专门来捕获异常错误，从而防止项目一场崩溃的问题
+  - 必须包含四个形参(err,req,res,next)`(err, req, res, next) => { next() }`
+  - 错误级别中间件注册在所有路由之后
+  ### 4. Express内置中间件
+    1. express.static 托管静态资源的内置中间件(无兼容性)
+    2. express.json 解析JSON格式的请求体数据(有兼容性)
+    `app.use(express.json())`
+    3. express.urlencoded 解析URL-eneoded格式的请求体数据(有兼容性)
+    `app.use(express.urlencoded({ extended: false }))`
+  ### 5. 第三方的中间件
+  - 非Express官方内置的，而是由第三方开发出来的中间件，叫做第三方中间件，在项目中，大家可以按需下载并配置第三方中间件，从而提高项目的开发效率。
+  - body-parser中间件
+   1. 运行`npm i body-parser`中间件
+   2. 使用require导入中间件
+   3. 调用app.use()注册并使用中间件
+  ## 3.4 自定义中间件
+  ### 1. 需求描述与实现步骤
+  - 定义中间件
+  - 监听 req 的 data 事件
+  - 监听 req 的 end 事件
+  - 使用 querystring 模块解析请求体数据
+  - 将解析出来的数据对象挂载为req.body
+  - 将自定义中间件封装为模块
+  ### 2. 监听req的data事件
+  - 在中间件中，需要监听req对象的data事件，来获取客户端发送到服务器的数据，客户端会把数据切割后，分批发送到服务器，因此每次一次触发data事件时，接受到的可能是数据的一部分
+  ### 3. 监听req的end事件
+  - 当请求体数据接受完毕后，会自动触发req的end事件
+  ### 4. 使用querystring 模块解析请求体数据
+  - Node.js 内置了一个querystring 模块，专门用来处理查询的字符串，通过这个模块提供的parse()函数，就可以轻松把查询字符串，解析成对象的格式
+  ### 5. 将解析出来的数据对象挂载为req.body 
+  - 上游的中间件和下游的中间件之间共享一份req和res，因此我们可以将解析出来的数据挂载为req的自定义属性，命名为req.body，供下游使用
+  ### 6. 将自定义中间件封装为模块
+  ## 4.1 使用express写接口
+  ## 4.2 创建API路由模块
+  ## 4.3 编写GET请求
+  ## 4.4 编写POST请求
+  ## 4.5 CORS跨域资源共享
+  ### 1. 接口的跨域问题
+  - 刚才编写的GET和POST接口，存在一个很严重的问题，不支持跨域
+  - 解决方法
+    1. cors 主流方法
+    2. JSONP 只支持GFT请求
+  ### 2. 使用cors中间件解决跨域问题
+  - 步骤 
+    1. 运行`npm i cors`安装中间件
+    2. 使用`const cors = require('cors')`导入中间件
+    3. 在路由之前调用`app.use(cors())`配置中间件
+  ### 3. 什么是cors
+  - cors是由一系列的http响应头组成的，这些HTTP响应头决定浏览器是否阻止前端js代码跨域获取资源
+  ### 4. 注意事项
+  - cors主要在服务端进行配置，客户端浏览器无需做任何额外的配置
+  - 有兼容性，只有支持XMLHttpRequest level2的浏览器才能使用
+  ### 5. cors响应头 Access-Control-Allow-Origin 制定了允许访问资源的外域 URL
+  ```
+  res.setHeader('Access-Control-Allow-Origin', 'http://bruceblog.io')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  ```
+  ### 6. cors响应头 Access-Control-Allow-Headers
+  - 默认情况下，CORS 仅支持客户端向服务器发送如下的 9 个请求头：Accept、Accept-Language、Content-Language、DPR、Downlink、Save-Data、Viewport-Width、Width 、Content-Type （值仅限于 text/plain、multipart/form-data、application/x-www-form-urlencoded 三者之一）
+  - 如果客户端向服务器发送了额外的请求头信息，则需要在服务器端，通过 Access-Control-Allow-Headers 对额外的请求头进行声明，否则这次请求会失败！
+  `res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Custom-Header')`
+  ### 7. cors响应头 Access-Control-Allow-Methods
+  - 默认情况下，CORS 仅支持客户端发起 GET、POST、HEAD 请求。如果客户端希望通过 PUT、DELETE 等方式请求服务器的资源，则需要在服务器端，通过 Access-Control-Alow-Methods 来指明实际请求所允许使用的 HTTP 方法
+  ```
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, DELETE, HEAD')
+  res.setHEader('Access-Control-Allow-Methods', '*')
+  ```
+  ### 8. CORS请求的分类
+  ### 9. 简单请求
+  - 请求方式：GET、POST、HEAD 三者之一
+  - HTTP 头部信息不超过以下几种字段：无自定义头部字段、Accept、Accept-Language、Content-Language、DPR、Downlink、Save-Data、Viewport-Width、Width 、Content-Type（只有三个值 application/x-www-form-urlencoded、multipart/form-data、text/plain）
+  ### 10. 预检请求
+  - 请求方式为 GET、POST、HEAD 之外的请求 Method 类型
+  - 请求头中包含自定义头部字段
+  - 向服务器发送了 application/json 格式的数据
+    在浏览器与服务器正式通信之前，浏览器会先发送 OPTION 请求进行预检，以获知服务器是否允许该实际请求，所以这一次的 OPTION 请求称为“预检请求”。服务器成功响应预检请求后，才会发送真正的请求，并且携带真实数据
+  ### 11. 简单请求和预检请求的区别
+  - 简单请求；服务器和客户端只会发生一次请求
+  - 预检请求；服务器和客户端只会发生两次请求，预检请求成功后，才会发生真正的请求
+  ## 4.6 jsonp接口
+  ### 1. 什么是jsonp
+  - 浏览器通过\<script>标签的src属性，请求服务器上的数据，同时，服务器返回一个函数的调用
+  - 特点
+    1. jsonp 不属于真正的ajax请求，因为它没有使用XMLHttpRequest这个功能
+    2. jsonp仅支持POST、PUT、DELETE等请求
+  ### 2. 注意事项 
+  - 为了防止冲突必须在cors之前配置jsonp接口
+  ### 3. 步骤
+  ```
+  app.get('/api/jsonp', (req, res) => {
+    //得到函数的名称
+    const funcName = req.query.callback
+    //定义要发送到客户端的数据对象
+    const data = { name: 'zs', age: 22,methos:'jsonp' }
+    //拼接出一个函数的调用
+    const scriptStr = `${funcName}(${JSON.stringify(data)})`
+    //把拼接好的字符串，响应给客户端
+    res.send(scriptStr)
+  })
+  ```
+  # MySQL数据库操作
+  ## 4.1 在项目中的操作数据库的步骤
+  - 安装操作数据库的第三方模块mysql
+  - 通过mysql模块连接到MySQL数据库
+  - 通过mysql模块执行SQL语句
+  ### 1. 安装
+  `npm i mysql`
+  ### 2. 配置
+  ```
+  const mysql = require('mysql')
+
+  const db = mysql.createPool({
+    host: '127.0.0.1', //本机数据库
+    user: 'root', // 用户名
+    password: '123', // 密码
+    database: 'spring' // 数据库名
+  })
+  ```
+  ### 3. 检测MySQL模块是否正常工作
+  ```
+  //测试mysql能否正常工作
+  db.query('select * from account', (err, res) => {
+    if (err) return console.log(err.message);
+    account = res
+  })
+  ```
+  ### 4. 数据库执行增删改查
+  - 文件地址('./09.msql')
